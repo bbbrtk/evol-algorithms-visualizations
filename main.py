@@ -33,7 +33,8 @@ def draw_plots(data):
     for key, value in data.items():
         plt.plot(
             'effort', 'avg', colors[i], label=key, marker=markers[i],
-            markevery=25, markersize=4, linewidth=0.5, data=value)
+            markevery=25, markersize=4, markeredgecolor='black',
+            markeredgewidth=0.6, linewidth=0.5, data=value)
         i += 1
 
     plt.margins(0)
@@ -41,10 +42,14 @@ def draw_plots(data):
     plt.xlabel('Rozegranych gier (x1000)')
     plt.ylabel('Odsetek wygranych gier [%]')
     plt.title('Pokolenie')
-    plt.legend(loc=4)
+    plt.legend(loc=4, numpoints=2)
 
     plt.xticks(np.arange(0, 500001, 100000), np.arange(0, 501, 100))
     plt.yticks(np.arange(0.6, 1.01, 0.05), np.arange(60, 101, 5))
+    ax.spines['top'].set_linewidth(1.2)
+    ax.spines['bottom'].set_linewidth(1.2)
+    ax.spines['left'].set_linewidth(1.2)
+    ax.spines['right'].set_linewidth(1.2)
 
     # additional x-axis
     ax2 = ax.twiny()
@@ -55,13 +60,14 @@ def draw_plots(data):
     bx = plt.subplot(1, 2, 2)
     boxes_array = []
     for key, value in data.items():
-        # normalized_df =  (y - y.mean()) / y.std()
-        boxes_array.append(value['avg'][1:])
+        del value['avg']
+        df = value.iloc[-1, 1:]
+        boxes_array.append(df)
 
-    meanprops = dict(marker='o', markeredgecolor='black', markerfacecolor='blue')
+    meanprops = dict(marker='o', markeredgecolor='black', markerfacecolor='b', markersize=5.0)
     whiskerprops = dict(color='b', linestyle='--')
-    flierprops = dict( color='b', marker='+', markersize=3.0)
-    medianprops = dict( color='red', linewidth=1.5)
+    flierprops = dict(marker='+', markerfacecolor='#171745', markeredgecolor='#171745', markersize=6.0)
+    medianprops = dict(color='red', linewidth=1.5)
 
     bp = plt.boxplot(
         boxes_array, patch_artist=True, notch=True, bootstrap=500,
@@ -73,10 +79,11 @@ def draw_plots(data):
 
     plt.margins(0)
     plt.grid(color='k', drawstyle="steps", linestyle='--', alpha=0.4, linewidth=0.8)
-    bx.yaxis.tick_right()
-    plt.yticks(np.arange(0.6, 1.01, 0.05), np.arange(60, 101, 5))
     plt.xticks(rotation=20)
-
+    bx.yaxis.tick_right()
+    plt.yticks(np.arange(0.5, 1.01, 0.062), np.arange(60, 101, 5))
+    bx.spines['top'].set_linestyle('--')
+    bx.spines['bottom'].set_linestyle('--')
 
 def main():
     data = import_csv(csv_names)
