@@ -7,7 +7,8 @@ import numpy as np
 # set font
 rcParams['font.family'] = 'sans-serif'
 rcParams['font.size'] = 10
-rcParams['font.sans-serif'] = ['Latin Modern Mono']
+rcParams['font.sans-serif'] = ['CMU Typewriter Text Variable Width']
+#rcParams['font.sans-serif'] = ['Latin Modern Mono']
 
 csv_names = ['1-Evol-RS', '1-Coev-RS', '2-Coev-RS', '1-Coev', '2-Coev']
 
@@ -17,7 +18,6 @@ def import_csv(csv_names):
     for i in csv_names:
         data[str(i)] = pd.read_csv('csv/' + i + '.csv')
         del data[str(i)]['generation']
-
         data[str(i)]['avg'] = \
             data[str(i)].iloc[1:, 1:].sum(axis=1) / (len(data[str(i)].columns) - 1)
 
@@ -39,11 +39,13 @@ def draw_plots(data):
 
     plt.margins(0)
     plt.grid(color='k', drawstyle="steps", linestyle='--', alpha=0.4, linewidth=0.8)
+    plt.tick_params(direction='in')
     plt.xlabel('Rozegranych gier (x1000)')
     plt.ylabel('Odsetek wygranych gier [%]')
     plt.title('Pokolenie')
     plt.legend(loc=4, numpoints=2)
 
+    #plt.xticks([0, 100, 200, 300, 400, 500])
     plt.xticks(np.arange(0, 500001, 100000), np.arange(0, 501, 100))
     plt.yticks(np.arange(0.6, 1.01, 0.05), np.arange(60, 101, 5))
     ax.spines['top'].set_linewidth(1.2)
@@ -54,7 +56,9 @@ def draw_plots(data):
     # additional x-axis
     ax2 = ax.twiny()
     ax2.xaxis.tick_top()
-    plt.xticks(np.arange(0, 500001, 100000), np.arange(0, 201, 40))
+    #plt.tick_params(direction='in')
+    #plt.xticks([0, 40, 80, 120, 160, 200])
+    plt.xticks(np.arange(0, 501000, 100000), np.arange(0, 201, 40))
 
     # boxplot
     bx = plt.subplot(1, 2, 2)
@@ -68,17 +72,18 @@ def draw_plots(data):
     whiskerprops = dict(color='b', linestyle='--')
     flierprops = dict(marker='+', markerfacecolor='#171745', markeredgecolor='#171745', markersize=6.0)
     medianprops = dict(color='red', linewidth=1.5)
+    boxprops = dict(color='blue', facecolor=(0,0,0,0))
 
     bp = plt.boxplot(
-        boxes_array, patch_artist=True, notch=True, bootstrap=500,
+        boxes_array, patch_artist=True, notch=True,
         labels=csv_names, showmeans=True, whiskerprops=whiskerprops, meanprops=meanprops,
-        medianprops=medianprops, flierprops=flierprops)
+        medianprops=medianprops, flierprops=flierprops, boxprops=boxprops)
 
-    plt.setp(bp['boxes'], color='blue', linewidth=1.5)
-    plt.setp(bp['boxes'], facecolor='#ffffff', alpha=0.5)
 
     plt.margins(0)
     plt.grid(color='k', drawstyle="steps", linestyle='--', alpha=0.4, linewidth=0.8)
+    plt.tick_params(direction='in')
+
     plt.xticks(rotation=20)
     bx.yaxis.tick_right()
     plt.yticks(np.arange(0.5, 1.01, 0.062), np.arange(60, 101, 5))
@@ -89,7 +94,6 @@ def main():
     data = import_csv(csv_names)
     draw_plots(data)
     plt.show()
-
 
 if __name__ == '__main__':
     main()
